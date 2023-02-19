@@ -20,7 +20,52 @@ function formatDate(timestamp) {
   let day = days[date.getDay()];
   return `${day},${hours}:${minutes}`;
 }
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+  let day = date.getDay();
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return days[day];
+}
+function displayForecast(response) {
+  let forecast = response.data.daily;
+  let forcastElement = document.querySelector("#forecast");
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu"];
+  let forecastHTML = `<div class="row">`;
 
+  forecast.forEach(function (forecastDay, index) {
+    if (index < 6) {
+      forecastHTML =
+        forecastHTML +
+        `<div class="col-2">
+         <div class="weather-forecast-date">${formatDay(forecastDay.time)}</div>
+            <img
+                  src=${forecastDay.condition.icon_url}
+                  class="img-fluid rounded-start"
+                  alt=${forecastDay.condition.icon}
+                  width="42px"
+                />
+          <div class="weather-forecast-temperatures">
+            <span class="weather-forecast-max">${Math.round(
+              forecastDay.temperature.maximum
+            )}º</span>
+            <span class="weather-forecast-min">${Math.round(
+              forecastDay.temperature.minimum
+            )}º</span>
+          </div>
+        </div>`;
+    }
+  });
+
+  forecastHTML = forecastHTML + `</div>`;
+  forcastElement.innerHTML = forecastHTML;
+}
+function getForecast(coordinates) {
+  console.log(coordinates);
+  let apiKey = "aa1aa42435abecd0fo10t3c17ebc9f2a";
+  let apiUrl = `https://api.shecodes.io/weather/v1/forecast?lon=${coordinates.longitude}&lat=${coordinates.latitude}&key=${apiKey}&units=metric`;
+  console.log(apiUrl);
+  axios.get(apiUrl).then(displayForecast);
+}
 function displayTemperature(response) {
   let temperatureElement = document.querySelector("#temperature");
   let cityElement = document.querySelector("#city");
@@ -42,6 +87,7 @@ function displayTemperature(response) {
     `https://shecodes-assets.s3.amazonaws.com/api/weather/icons/${response.data.condition.icon}.png`
   );
   iconElement.setAttribute("alt", response.data.condition.description);
+  getForecast(response.data.coordinates);
 }
 function search(city) {
   let apiKey = "aa1aa42435abecd0fo10t3c17ebc9f2a";
