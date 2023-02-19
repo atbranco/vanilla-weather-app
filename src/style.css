@@ -32,6 +32,7 @@ li::first-letter {
 .weather-app {
   border: 1px solid #dadde1;
   border-radius: 5px;
+  padding: 30px 30px;
 }
 .overview {
   margin-bottom: 30px;
